@@ -1,6 +1,9 @@
 # Havak
 A fullstack Rust app for documenting collections
 
+## Project Structure
+The project follows the standard project structure.
+
 ## Workflow
 ### Git workflow
 The Git workflow is as follows:
