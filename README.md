@@ -4,6 +4,8 @@ A fullstack Rust app for documenting collections
 ## Project Structure
 The project follows the standard project structure.
 
+For managing the data, the embedded database SQLite is used.
+
 ## Workflow
 ### Git workflow
 The Git workflow is as follows:
