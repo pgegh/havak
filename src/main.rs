@@ -1,3 +1,4 @@
+use libc;
 use log::{error, info};
 use std::fs::File;
 use std::io::Write;
@@ -14,29 +15,37 @@ fn daemonize() -> std::io::Result<()> {
             "Fork failed",
         ));
     }
-    if pid > 0 {
+    else if pid > 0 {
         // Parent process exits, leaving the child to run as a daemon
         std::process::exit(0);
     }
+    else {
+        // Child process continues here.
+        // Create a new session and become the session leader.
+        let pgid = unsafe { libc::setsid() };
+        if pgid < 0 {
+            // Setsid failed
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Setsid failed",
+            ));
+        }
 
-    // Child process continues here
-    // Create a new session and detach from terminal
-    unsafe { libc::setsid() };
+        // Redirect stdout and stderr to a log file
+        let log_file = File::create("temp/daemon.log")?;
+        let mut log_writer = std::io::BufWriter::new(log_file);
 
-    // Redirect stdout and stderr to a log file
-    let log_file = File::create("temp/daemon.log")?;
-    let mut log_writer = std::io::BufWriter::new(log_file);
-
-    // Example of some long-running work the daemon does
-    loop {
-        writeln!(
-            log_writer,
-            "Daemon running at: {:?}",
-            std::time::SystemTime::now()
-        )
-        .unwrap();
-        log_writer.flush().unwrap();
-        thread::sleep(Duration::from_secs(1));
+        // Example of some long-running work the daemon does
+        loop {
+            writeln!(
+                log_writer,
+                "Daemon running at: {:?}",
+                std::time::SystemTime::now()
+            )
+                .unwrap();
+            log_writer.flush().unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
     }
 }
 
