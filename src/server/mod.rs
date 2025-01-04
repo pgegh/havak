@@ -1,8 +1,11 @@
+//! The core module of `havak-server`.
+
 use std::fs::File;
 use std::io::Write;
 use std::thread;
 use std::time::Duration;
 
+/// Starts the execution of the sever logic.
 pub fn start_sever() -> std::io::Result<()> {
     // Redirect stdout and stderr to a log file
     let log_file = File::create("temp/daemon.log")?;
