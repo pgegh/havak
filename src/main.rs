@@ -3,8 +3,9 @@
 use env_logger;
 use log::{error, info};
 
-pub mod server;
-pub mod utils;
+mod server;
+mod utils;
+mod data_types;
 
 fn main() {
     env_logger::init();
